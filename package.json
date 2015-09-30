@@ -8,17 +8,21 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/andrewstuart/async-traversal.js.git"
+    "url": "git+https://github.com/andrewstuart/async-traversal.git"
   },
   "keywords": [
-    "async"
+    "async",
+    "tree",
+    "traversal",
+    "recursion",
+    "asynchronous"
   ],
   "author": "Andrew Stuart <andrew.stuart2@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/andrewstuart/async-traversal.js/issues"
+    "url": "https://github.com/andrewstuart/async-traversal/issues"
   },
-  "homepage": "https://github.com/andrewstuart/async-traversal.js#readme",
+  "homepage": "https://github.com/andrewstuart/async-traversal#readme",
   "dependencies": {
     "q": "^1.4.1"
   },
