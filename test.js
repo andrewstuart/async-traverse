@@ -1,72 +1,123 @@
+'use strict';
 var traverser = require('./traverser');
+var expect = require('chai').expect;
+var Q = require('q');
 
-var list = [{
-    id: 1,
-    children: [{
-        id: 2,
-        children: [{
-            id: 3
-        }]
-    }]
-},{
-    id: 4,
-    children: [{
-        id: 5,
-        children: [{
-            id: 6
-        }]
-    }]
-}]
+describe('traverser', function() {
+    var tree, arr, t;
 
-var arr = [];
+    beforeEach(function() {
+        tree = [{
+            id: 1,
+            children: [{
+                id: 2,
+                children: [{
+                    id: 3
+                }]
+            }]
+        },{
+            id: 4,
+            children: [{
+                id: 5,
+                children: [{
+                    id: 6
+                }]
+            }]
+        }];
 
-var t = traverser(function(node, next) {
-    arr.push(node.id);
-    if(node.children) { next(node.children); } else { next(); }
-});
+        arr = [];
 
-var done = t(list).then(function(e) {
-    if ( arr.join('') !== '123456' ) {
-        throw 'Unexpected result';
-    }
-});
+        t = traverser(function(node, next) {
+            arr.push(node.id);
+            if(node.children) { next(node.children); } else { next(); }
 
-var arr2 = [];
+            expect(t).to.be.a('function');
+        });
+    });
 
-var u = traverser(function(node, next) {
-    if(node.children) { next(node.children); } else { next(); }
-    arr2.push(node.id);
-});
+    it('should return a function', function() {
+        expect(t).to.be.a('function');
+    });
 
-u(list).then(function(e) {
-    if (arr2.join('') !== '654321') { throw 'Unexpected error'; }
-});
+    it('should return a promise', function() {
+        var done = t(tree);
+        expect(Q.isPromise(done)).to.equal(true);
+    });
 
-var arr3 = [];
-var v = traverser(function(node, next) {
-    if(!node.children) {
-        next();
-    }
-    arr3.push(node.id);
-    if(node.children) {
-        next(node.children);
-    }
-});
+    it('should recurse down when next() is passed an array', function() {
+        t(tree);
+        expect(arr).to.deep.equal([1, 2, 3, 4, 5, 6]);
+    });
 
-// v(list).then(function(e) { 
-//     console.log(arr3);
-// });
+    describe('asynchronously', function() {
+        var current, next;
+
+        beforeEach(function() {
+            current = undefined, next = undefined;
+
+            t = traverser(function(node, _next) {
+                current = node;
+                next = _next;
+            });
+        });
+
+        it('should be given each object as next is called', function() {
+            t(tree);
+
+            expect(current).to.equal(tree[0]);
+            expect(next).to.be.a('function');
+
+            next();
+
+            expect(current).to.equal(tree[1]);
+        });
+
+        it('should resolve a promise after next is done', function(done) {
+            t(tree).then(function(e) {
+                expect(e).to.equal(tree);
+
+                done();
+            });
+
+            next();
+            next();
+        });
+    });
 
 
-var next
+    // var arr2 = [];
 
-var i = setInterval(function() {next();}, 1000);
+    // var u = traverser(function(node, next) {
+    //     if(node.children) { next(node.children); } else { next(); }
+    //     arr2.push(node.id);
+    // });
 
-var w = traverser(function(node, n) {
-    console.log(node);
-    next = n;
-});
+    // u(tree).then(function(e) {
+    //     if (arr2.join('') !== '654321') { throw 'Unexpected error'; }
+    // });
 
-w(list).then(function() {
-    clearInterval(i);
+    // var arr3 = [];
+    // var v = traverser(function(node, next) {
+    //     if(!node.children) {
+    //         next();
+    //     }
+    //     arr3.push(node.id);
+    //     if(node.children) {
+    //         next(node.children);
+    //     }
+    // });
+
+    // var next
+
+    // var i = setInterval(function() {next();}, 1000);
+
+    // var w = traverser(function(node, n) {
+    //     console.log(node);
+    //     next = n;
+    // });
+
+    // w(tree).then(function() {
+    //     clearInterval(i);
+    // });
+
 });

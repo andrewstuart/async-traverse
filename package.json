@@ -18,5 +18,12 @@
   "bugs": {
     "url": "https://github.com/andrewstuart/async-traversal.js/issues"
   },
-  "homepage": "https://github.com/andrewstuart/async-traversal.js#readme"
+  "homepage": "https://github.com/andrewstuart/async-traversal.js#readme",
+  "dependencies": {
+    "q": "^1.4.1"
+  },
+  "devDependencies": {
+    "chai": "^3.3.0",
+    "mocha": "^2.3.3"
+  }
 }
