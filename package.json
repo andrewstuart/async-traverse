@@ -1,0 +1,22 @@
+{
+  "name": "async-traverse",
+  "version": "1.0.0",
+  "description": "An asynchronous tree traversal utility",
+  "main": "traversal.js",
+  "scripts": {
+    "test": "mocha test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/andrewstuart/async-traversal.js.git"
+  },
+  "keywords": [
+    "async"
+  ],
+  "author": "Andrew Stuart <andrew.stuart2@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/andrewstuart/async-traversal.js/issues"
+  },
+  "homepage": "https://github.com/andrewstuart/async-traversal.js#readme"
+}
