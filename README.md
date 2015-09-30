@@ -1,5 +1,64 @@
 # Async-traverse
 
+A utility library for asynchronous traversal and delegated recursion.
+
+- [Example](#example)
+
+## API
+
+The async-traverse package exports a factory function for custom traversal
+implementations.
+
+```javascript
+var traverser = require('async-traverse');
+```
+
+Provide a callback function with signature `node, next`, and a traversal
+function will be returned.
+
+```javascript
+var traverser = require('async-traverse');
+
+var t = traverser(function(node, next) {
+  console.log(node);
+  next();
+});
+
+//t is your custom traverser.
+```
+
+Pass an array to the provided function, and it will begin to execute your
+callback, passing it at each iteration the current node, and a `next` function.
+Each time your code calls the next() function (and passes no parameters), your
+callback will be called again with the next object.
+
+If your code passes an array, `next(someArray)`, then the traverser will iterate
+over each `someArray` item before returning to its previous items. This allows
+you to make the decision asynchronously as to whether recursion needs to happen,
+and control which items will be processed asynchronously.
+
+- Recurse on any property
+- Wait for user input before continuing
+- Check with an asynchronous service before recursing
+
+The initial call to your returned function, `t(someData)`, will return a
+promise for the completed traversal of the tree. The promise is resolved when
+there are no more items to process.
+
+```javascript
+var traverser = require('async-traverse');
+
+var t = traverser(function(node, next) {
+  console.log(node);
+  next();
+});
+
+//t is your custom traverser.
+
+
+```
+
+## Example
 ```javascript
 var traverser = require('async-traverse')
 
