@@ -1,12 +1,17 @@
 'use strict';
 var traverser = require('./traverser');
 var expect = require('chai').expect;
+var sinon = require('sinon');
 var Q = require('q');
 
 describe('traverser', function() {
-    var tree, arr, t;
+    var arr, tree, t, t2, current, next;
 
     beforeEach(function() {
+        current = null;
+        next = null;
+        arr = [];
+
         tree = [{
             id: 1,
             children: [{
@@ -25,14 +30,16 @@ describe('traverser', function() {
             }]
         }];
 
-        arr = [];
-
-        t = traverser(function(node, next) {
-            arr.push(node.id);
-            if(node.children) { next(node.children); } else { next(); }
-
-            expect(t).to.be.a('function');
+        t = traverser(function(node, _next) {
+            current = node;
+            next = _next;
         });
+
+        t2 = traverser(function(node, next) {
+            arr.push(node.id);
+            if ( node.children ) { next(node.children); } else { next(); }
+        });
+
     });
 
     it('should return a function', function() {
@@ -45,22 +52,39 @@ describe('traverser', function() {
     });
 
     it('should recurse down when next() is passed an array', function() {
-        t(tree);
-        expect(arr).to.deep.equal([1, 2, 3, 4, 5, 6]);
+        return t2(tree).then(function() {
+            expect(arr).to.deep.equal([1, 2, 3, 4, 5, 6]);
+        })
+    });
+
+    describe('next() function', function() {
+        it('should return a promise', function() {
+            t(tree);
+
+            var p = next(current.children);
+            expect(Q.isPromise(p)).to.equal(true);
+        });
+
+        it('should resolve when a dataset is complete', function() {
+            var spy = sinon.spy();
+
+            setTimeout(function() {
+                next();
+                next();
+                next();
+            }, 0);
+
+            //Return promise for async
+            return t(tree).then(function() {
+                spy();
+            }).finally(function() {
+                sinon.assert.called(spy);
+            });
+
+        });
     });
 
     describe('asynchronously', function() {
-        var current, next;
-
-        beforeEach(function() {
-            current = undefined, next = undefined;
-
-            t = traverser(function(node, _next) {
-                current = node;
-                next = _next;
-            });
-        });
-
         it('should be given each object as next is called', function() {
             t(tree);
 
@@ -72,52 +96,8 @@ describe('traverser', function() {
             expect(current).to.equal(tree[1]);
         });
 
-        it('should resolve a promise after next is done', function(done) {
-            t(tree).then(function(e) {
-                expect(e).to.equal(tree);
-
-                done();
-            });
-
-            next();
-            next();
-        });
+        // it('should resolve a promise after next is done', function(done) {
+        //     return t(tree);
+        // });
     });
-
-
-    // var arr2 = [];
-
-    // var u = traverser(function(node, next) {
-    //     if(node.children) { next(node.children); } else { next(); }
-    //     arr2.push(node.id);
-    // });
-
-    // u(tree).then(function(e) {
-    //     if (arr2.join('') !== '654321') { throw 'Unexpected error'; }
-    // });
-
-    // var arr3 = [];
-    // var v = traverser(function(node, next) {
-    //     if(!node.children) {
-    //         next();
-    //     }
-    //     arr3.push(node.id);
-    //     if(node.children) {
-    //         next(node.children);
-    //     }
-    // });
-
-    // var next
-
-    // var i = setInterval(function() {next();}, 1000);
-
-    // var w = traverser(function(node, n) {
-    //     console.log(node);
-    //     next = n;
-    // });
-
-    // w(tree).then(function() {
-    //     clearInterval(i);
-    // });
-
 });
