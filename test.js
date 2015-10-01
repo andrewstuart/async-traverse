@@ -96,8 +96,35 @@ describe('traverser', function() {
             expect(current).to.equal(tree[1]);
         });
 
-        // it('should resolve a promise after next is done', function(done) {
-        //     return t(tree);
-        // });
+        it('should resolve a promise after next is done', function() {
+
+            var spy1 = sinon.spy();
+            var spy2 = sinon.spy();
+
+            var p1 = t(tree).then(function() {
+                spy1();
+            }).finally(function() {
+            });
+
+            setTimeout(function() {
+                next(current.children).then(function() {
+                    spy2();
+                });
+
+                setTimeout(function() {
+                    sinon.assert.notCalled(spy1);
+                    sinon.assert.notCalled(spy2);
+                    next()
+                    next()
+
+                    setTimeout(function() {
+                        sinon.assert.called(spy1);
+                        sinon.assert.called(spy2);
+                    });
+                }, 0);
+            }, 0);
+
+            return p1;
+        });
     });
 });
