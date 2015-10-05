@@ -1,4 +1,7 @@
-function traverser(cb) {
+angular.module('asyncTraverse', [])
+    .provider('asyncTraverse', ['$q', function($q) {
+        var Q = $q;
+        function traverser(cb) {
 
     function traverse (list) {
         var items = list.concat();
@@ -41,3 +44,6 @@ function traverser(cb) {
 
     return traverse;
 }
+
+        return traverser;
+    }]);

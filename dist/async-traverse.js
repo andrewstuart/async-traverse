@@ -1,3 +1,5 @@
+var Q = require('q');
+
 function traverser(cb) {
 
     function traverse (list) {
@@ -41,3 +43,6 @@ function traverser(cb) {
 
     return traverse;
 }
+
+
+module.exports = traverser;
