@@ -1,5 +1,5 @@
 angular.module('asyncTraverse', [])
-    .provider('asyncTraverse', ['$q', function($q) {
+    .factory('asyncTraverse', ['$q', function($q) {
         var Q = $q;
         function traverser(cb) {
 
