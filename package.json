@@ -1,8 +1,8 @@
 {
   "name": "async-traverse",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "An asynchronous tree traversal utility",
-  "main": "traversal.js",
+  "main": "dist/async-traverse.js",
   "scripts": {
     "test": "mocha test"
   },
